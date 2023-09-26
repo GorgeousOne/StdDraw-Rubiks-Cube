@@ -2,34 +2,36 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.joml.Vector3f;
 
-public class AABB {
+import java.awt.*;
+
+public class Cube {
 	private final Vector4f[] vertices; // Array to store the 8 vertices of the AABB
 	private final int[][] faces;       // 2D array to store the indices for each face of the cube
 	private final Vector4f[] normals;  // Array to store the normals for each face of the cube
-	private Matrix4f transform;   // Transformation matrix for the AABB
+	private final Matrix4f transform;   // Transformation matrix for the AABB
+	private final Color[] faceColos;
 
-	public AABB(float width, float height, float length) {
+	public Cube(float size) {
 		this.transform = new Matrix4f().identity();
-		this.vertices = computeVertices(width, height, length);
+		this.vertices = computeVertices(0.5f * size);
 		this.faces = computeFaces();
 		this.normals = computeNormals();
+		this.faceColos = new Color[] {
+				StdDraw.DARK_GRAY, StdDraw.DARK_GRAY, StdDraw.DARK_GRAY,
+				StdDraw.DARK_GRAY, StdDraw.DARK_GRAY, StdDraw.DARK_GRAY
+		};
 	}
 
-	// Compute and return the 12 vertices of the AABB
-	private Vector4f[] computeVertices(float width, float height, float length) {
-		float halfWidth = width * 0.5f;
-		float halfHeight = height * 0.5f;
-		float halfLength = length * 0.5f;
-
+	private Vector4f[] computeVertices(float size) {
 		return new Vector4f[]{
-				new Vector4f(-halfWidth, -halfHeight, -halfLength, 1),
-				new Vector4f(halfWidth, -halfHeight, -halfLength, 1),
-				new Vector4f(halfWidth, halfHeight, -halfLength, 1),
-				new Vector4f(-halfWidth, halfHeight, -halfLength, 1),
-				new Vector4f(-halfWidth, -halfHeight, halfLength, 1),
-				new Vector4f(halfWidth, -halfHeight, halfLength, 1),
-				new Vector4f(halfWidth, halfHeight, halfLength, 1),
-				new Vector4f(-halfWidth, halfHeight, halfLength, 1)
+				new Vector4f(-size, -size, -size, 1),
+				new Vector4f(size, -size, -size, 1),
+				new Vector4f(size, size, -size, 1),
+				new Vector4f(-size, size, -size, 1),
+				new Vector4f(-size, -size, size, 1),
+				new Vector4f(size, -size, size, 1),
+				new Vector4f(size, size, size, 1),
+				new Vector4f(-size, size, size, 1)
 		};
 	}
 
@@ -55,6 +57,10 @@ public class AABB {
 				new Vector4f(-1, 0, 0, 0), // Left face normal
 				new Vector4f(1, 0, 0, 0)   // Right face normal
 		};
+	}
+
+	public void setFaceColor(int face, Color color) {
+		faceColos[face] = color;
 	}
 
 	public void translate(float dx, float dy, float dz) {
@@ -106,11 +112,10 @@ public class AABB {
 			xy[j] = vertProjection.y + 0.5;
 		}
 
-		StdDraw.setPenColor(StdDraw.YELLOW);
+		StdDraw.setPenColor(faceColos[i]);
 		StdDraw.filledPolygon(xs, xy);
 
-		StdDraw.setPenRadius(0.004);
-		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
+		StdDraw.setPenColor(StdDraw.BLACK);
 		StdDraw.polygon(xs, xy);
 
 	}

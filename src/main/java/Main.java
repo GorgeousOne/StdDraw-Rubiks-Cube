@@ -16,11 +16,12 @@ public class Main {
 		StdDraw.setCanvasSize(w, h);
 		float aspect = 1f * w / h;
 
-		Camera cam = new Camera(new Vector3f(), 2, 0, 30, 60);
+		Camera cam = new Camera(new Vector3f(), 2, 0, -30, 60);
 
 		float size = 0.5f;
 //		AABB box = new AABB(size, size, size);
 		RubiksCube box = new RubiksCube(size);
+		StdDraw.setPenRadius(0.006);
 
 		while (!requestExit) {
 			if (StdDraw.isKeyPressed(KeyEvent.VK_ESCAPE)) {
