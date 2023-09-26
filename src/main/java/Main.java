@@ -16,12 +16,12 @@ public class Main {
 	private boolean requestExit;
 
 	Main() {
-		mouseSensitivity = 150;
+		mouseSensitivity = 200;
 		cam = new Camera(new Vector3f(), 2, 0, -30, 60);
 		box = new RubiksCube(0.5f);
-		StdDraw.setPenRadius(0.006);
-		setGameSize(800, 600);
 
+		box.rotateFace(RubiksCube.Facing.RIGHT, 1);
+		setGameSize(800, 600);
 		runGameLoop();
 	}
 
@@ -51,9 +51,10 @@ public class Main {
 	}
 
 	private void render() {
+		StdDraw.setPenRadius(0.006);
+
 		Matrix4f projection = cam.getProjection(aspect);
 		Matrix4f view = cam.getView();
-
 		box.render(projection.mul(view), cam.getPos());
 	}
 
@@ -67,7 +68,6 @@ public class Main {
 			cam.move(-dx * mouseSensitivity,
 					-dy * mouseSensitivity);
 		}
-
 		pMouseX = mouseX;
 		pMouseY = mouseY;
 	}

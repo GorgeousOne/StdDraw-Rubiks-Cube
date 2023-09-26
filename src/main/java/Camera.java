@@ -24,7 +24,7 @@ public class Camera {
 		yaw += deltaYaw;
 		pitch += deltaPitch;
 		// Ensure pitch stays within [-90, 90] degrees
-		pitch = Math.min(90.0f, Math.max(-90.0f, pitch));
+		pitch = Math.min(89.9f, Math.max(-89.9f, pitch));
 	}
 
 	public Matrix4f getView() {

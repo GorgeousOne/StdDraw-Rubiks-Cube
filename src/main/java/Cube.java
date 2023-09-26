@@ -67,6 +67,10 @@ public class Cube {
 		transform.translate(dx, dy, dz);
 	}
 
+	public void addTransform(Matrix4f transform) {
+		this.transform.mul(transform);
+	}
+
 	// Getter method for the transformation matrix
 	public Matrix4f getTransform() {
 		return transform;
@@ -111,12 +115,10 @@ public class Cube {
 			xs[j] = vertProjection.x + 0.5; //center at 1/2 screen width & height
 			xy[j] = vertProjection.y + 0.5;
 		}
-
 		StdDraw.setPenColor(faceColos[i]);
 		StdDraw.filledPolygon(xs, xy);
 
 		StdDraw.setPenColor(StdDraw.BLACK);
 		StdDraw.polygon(xs, xy);
-
 	}
 }
