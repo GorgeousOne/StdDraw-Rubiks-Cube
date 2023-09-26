@@ -8,7 +8,7 @@ public class Cube {
 	private final Vector4f[] vertices; // Array to store the 8 vertices of the AABB
 	private final int[][] faces;       // 2D array to store the indices for each face of the cube
 	private final Vector4f[] normals;  // Array to store the normals for each face of the cube
-	private final Matrix4f transform;   // Transformation matrix for the AABB
+	private Matrix4f transform;   // Transformation matrix for the AABB
 	private final Color[] faceColos;
 
 	public Cube(float size) {
@@ -68,7 +68,7 @@ public class Cube {
 	}
 
 	public void addTransform(Matrix4f transform) {
-		this.transform.mul(transform);
+		transform.mul(this.transform, this.transform);
 	}
 
 	// Getter method for the transformation matrix

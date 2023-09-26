@@ -19,11 +19,12 @@ public class Main {
 	
 	Main() {
 		mouseSensitivity = 200;
-		cam = new Camera(new Vector3f(), 2, 0, -30, 60);
+		cam = new Camera(new Vector3f(), 2, 30, 25, 60);
 		box = new RubiksCube(0.5f);
 		sphere = new SpotSphere(10f, 200, 0.01f);
 		
-		box.rotateFace(RubiksCube.Facing.RIGHT, 1);
+		box.rotateFace(RubiksCube.Facing.LEFT, 1);
+		box.rotateFace(RubiksCube.Facing.RIGHT, -2);
 		setGameSize(800, 600);
 		runGameLoop();
 	}
