@@ -3,6 +3,8 @@ import org.joml.Vector3f;
 import org.joml.Math;
 
 public class Camera {
+
+	private final static Vector3f UP = new Vector3f(0, 1, 0);
 	private Vector3f target; // Target point to orbit around
 	private float distance; // Distance from the target point
 	private float yaw; // Yaw angle (horizontal rotation)
@@ -27,15 +29,11 @@ public class Camera {
 
 	public Matrix4f getView() {
 		// Calculate the camera's position based on yaw, pitch, and distance
-		Vector3f position = new Vector3f(
-				target.x + distance * Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)),
-				target.y + distance * Math.sin(Math.toRadians(pitch)),
-				target.z + distance * Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))
-		);
+		Vector3f position = getPos();
 
 		// Create a view matrix to look at the target from the calculated position
 		Matrix4f viewMatrix = new Matrix4f();
-		viewMatrix.lookAt(position, target, new Vector3f(0, 1, 0));
+		viewMatrix.lookAt(position, target, UP);
 
 		return viewMatrix;
 	}
@@ -46,18 +44,16 @@ public class Camera {
 	}
 
 	public Vector3f getPos() {
-		return new Vector3f(
-				target.x + distance * Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)),
-				target.y + distance * Math.sin(Math.toRadians(pitch)),
-				target.z + distance * Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))
-		);
+		return new Vector3f(target).add(getViewDir().mul(-distance));
 	}
 
 	public Vector3f getViewDir() {
-		float x = (Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
-		float y = (Math.sin(Math.toRadians(pitch)));
-		float z = (Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
-		return new Vector3f(x, y, z).normalize();
+		float cosPitch = Math.cos(Math.toRadians(-pitch));
+		return new Vector3f(
+				Math.cos(Math.toRadians(-yaw)) * cosPitch,
+				Math.sin(Math.toRadians(-pitch)),
+				Math.sin(Math.toRadians(-yaw)) * cosPitch
+		).normalize();
 	}
 	// Getter and Setter methods for distance, yaw, pitch, and fov
 

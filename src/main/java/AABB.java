@@ -64,20 +64,20 @@ public class AABB {
 	}
 
 	// Function to draw visible faces with a parent and perspective transform
-	public void drawPerspective(Matrix4f parentTransform, Matrix4f viewProjection, Vector3f viewDir) {
-		Matrix4f combinedTransform = new Matrix4f(parentTransform).mul(transform);
-		Matrix4f invertedTransform = new Matrix4f(combinedTransform).invert();
-		Matrix4f viewProjectionCombined = new Matrix4f(viewProjection).mul(combinedTransform);
-
-		Vector4f inverseViewDir = new Vector4f();
-		invertedTransform.transform(new Vector4f(viewDir.x, viewDir.y, viewDir.z, 0f), inverseViewDir);
+	public void drawPerspective(Matrix4f parentTransform, Matrix4f viewProjection, Vector3f camPos) {
+		Matrix4f combinedTransform = parentTransform.mul(transform, new Matrix4f());
+		Matrix4f inverseTransform = new Matrix4f(combinedTransform).invert();
+		Matrix4f viewProjectionCombined = viewProjection.mul(combinedTransform, new Matrix4f());
+		Vector4f inverseCamPos = inverseTransform.transform(new Vector4f(camPos.x, camPos.y, camPos.z, 1f));
 
 		for (int i = 0; i < faces.length; i++) {
 			Vector4f faceNormal = normals[i];
-			float dotProduct = inverseViewDir.dot(faceNormal);
+			Vector4f anyFaceVertex = vertices[faces[i][0]];
+			Vector4f dist = new Vector4f(inverseCamPos).sub(anyFaceVertex);
+			float cosViewAngle = faceNormal.dot(dist.normalize());
 
 			// Check if the face is visible (dot product is positive)
-			if (1 > 0) { //dotProduct
+			if (cosViewAngle > 0) {
 				drawFace(i, viewProjectionCombined);
 			}
 		}
@@ -103,5 +103,10 @@ public class AABB {
 		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
 		StdDraw.polygon(xs, xy);
 
+	}
+
+	public Vector3f getCenter(Matrix4f parentTransform) {
+		Vector4f center = parentTransform.mul(this.transform).transform(new Vector4f());
+		return new Vector3f(center.x, center.y, center.z);
 	}
 }

@@ -16,7 +16,7 @@ public class Main {
 		StdDraw.setCanvasSize(w, h);
 		float aspect = 1f * w / h;
 
-		Camera cam = new Camera(new Vector3f(), 5, 0, 0, 60);
+		Camera cam = new Camera(new Vector3f(), 2, 0, 30, 90);
 
 		float size = 0.5f;
 		AABB box = new AABB(size, size, size);
@@ -29,12 +29,12 @@ public class Main {
 			Matrix4f view = cam.getView();
 
 			Matrix4f eye = new Matrix4f().identity();
-			box.drawPerspective(eye, projection.mul(view), cam.getViewDir());
+			box.drawPerspective(eye, projection.mul(view), cam.getPos());
+			cam.move((float) Math.PI / 2f, 0);
 
-			cam.move((float) Math.PI / 5f, 0.1f);
 			StdDraw.show();
-			StdDraw.clear();
 			StdDraw.pause(15);
+			StdDraw.clear();
 		}
 		System.exit(0);
 	}
