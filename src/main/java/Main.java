@@ -16,10 +16,11 @@ public class Main {
 		StdDraw.setCanvasSize(w, h);
 		float aspect = 1f * w / h;
 
-		Camera cam = new Camera(new Vector3f(), 2, 0, 30, 90);
+		Camera cam = new Camera(new Vector3f(), 2, 0, 30, 60);
 
 		float size = 0.5f;
-		AABB box = new AABB(size, size, size);
+//		AABB box = new AABB(size, size, size);
+		RubiksCube box = new RubiksCube(size);
 
 		while (!requestExit) {
 			if (StdDraw.isKeyPressed(KeyEvent.VK_ESCAPE)) {
@@ -28,8 +29,9 @@ public class Main {
 			Matrix4f projection = cam.getProjection(aspect);
 			Matrix4f view = cam.getView();
 
-			Matrix4f eye = new Matrix4f().identity();
-			box.drawPerspective(eye, projection.mul(view), cam.getPos());
+//			Matrix4f eye = new Matrix4f().identity();
+//			box.render(eye, projection.mul(view), cam.getPos());
+			box.render(projection.mul(view), cam.getPos());
 			cam.move((float) Math.PI / 2f, 0);
 
 			StdDraw.show();

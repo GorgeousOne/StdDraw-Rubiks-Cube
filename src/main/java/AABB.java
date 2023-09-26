@@ -3,7 +3,7 @@ import org.joml.Vector4f;
 import org.joml.Vector3f;
 
 public class AABB {
-	private final Vector4f[] vertices; // Array to store the 12 vertices of the AABB
+	private final Vector4f[] vertices; // Array to store the 8 vertices of the AABB
 	private final int[][] faces;       // 2D array to store the indices for each face of the cube
 	private final Vector4f[] normals;  // Array to store the normals for each face of the cube
 	private Matrix4f transform;   // Transformation matrix for the AABB
@@ -57,14 +57,22 @@ public class AABB {
 		};
 	}
 
+	public void translate(float dx, float dy, float dz) {
+		transform.translate(dx, dy, dz);
+	}
 
 	// Getter method for the transformation matrix
 	public Matrix4f getTransform() {
 		return transform;
 	}
 
+	public Vector3f getCenter(Matrix4f parentTransform) {
+		Vector4f center = parentTransform.mul(transform, new Matrix4f()).transform(new Vector4f());
+		return new Vector3f(center.x, center.y, center.z);
+	}
+
 	// Function to draw visible faces with a parent and perspective transform
-	public void drawPerspective(Matrix4f parentTransform, Matrix4f viewProjection, Vector3f camPos) {
+	public void render(Matrix4f parentTransform, Matrix4f viewProjection, Vector3f camPos) {
 		Matrix4f combinedTransform = parentTransform.mul(transform, new Matrix4f());
 		Matrix4f inverseTransform = new Matrix4f(combinedTransform).invert();
 		Matrix4f viewProjectionCombined = viewProjection.mul(combinedTransform, new Matrix4f());
@@ -75,6 +83,7 @@ public class AABB {
 			Vector4f anyFaceVertex = vertices[faces[i][0]];
 			Vector4f dist = new Vector4f(inverseCamPos).sub(anyFaceVertex);
 			float cosViewAngle = faceNormal.dot(dist.normalize());
+//			cosViewAngle = 1;
 
 			// Check if the face is visible (dot product is positive)
 			if (cosViewAngle > 0) {
@@ -93,20 +102,16 @@ public class AABB {
 			Vector4f vertProjection = new Vector4f();
 			projection.transform(vertices[faceIndices[j]], vertProjection);
 			vertProjection.div(vertProjection.w);
-			xs[j] = vertProjection.x + 0.5;
+			xs[j] = vertProjection.x + 0.5; //center at 1/2 screen width & height
 			xy[j] = vertProjection.y + 0.5;
 		}
 
-//		StdDraw.setPenColor(StdDraw.YELLOW);
-//		StdDraw.filledPolygon(xs, xy);
+		StdDraw.setPenColor(StdDraw.YELLOW);
+		StdDraw.filledPolygon(xs, xy);
+
 		StdDraw.setPenRadius(0.004);
 		StdDraw.setPenColor(StdDraw.BOOK_BLUE);
 		StdDraw.polygon(xs, xy);
 
-	}
-
-	public Vector3f getCenter(Matrix4f parentTransform) {
-		Vector4f center = parentTransform.mul(this.transform).transform(new Vector4f());
-		return new Vector3f(center.x, center.y, center.z);
 	}
 }
