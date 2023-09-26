@@ -7,6 +7,8 @@ public class Main {
 
 	private Camera cam;
 	private RubiksCube box;
+	private SpotSphere sphere;
+	
 	private float aspect;
 
 	private float pMouseX;
@@ -14,12 +16,13 @@ public class Main {
 	private float mouseSensitivity;
 
 	private boolean requestExit;
-
+	
 	Main() {
 		mouseSensitivity = 200;
 		cam = new Camera(new Vector3f(), 2, 0, -30, 60);
 		box = new RubiksCube(0.5f);
-
+		sphere = new SpotSphere(10f, 200, 0.01f);
+		
 		box.rotateFace(RubiksCube.Facing.RIGHT, 1);
 		setGameSize(800, 600);
 		runGameLoop();
@@ -52,10 +55,12 @@ public class Main {
 
 	private void render() {
 		StdDraw.setPenRadius(0.006);
-
+		
 		Matrix4f projection = cam.getProjection(aspect);
-		Matrix4f view = cam.getView();
-		box.render(projection.mul(view), cam.getPos());
+		Matrix4f viewProjection = projection.mul(cam.getView());
+		
+		sphere.render(viewProjection, aspect);
+		box.render(viewProjection, cam.getPos());
 	}
 
 	private void handleMouseInput() {

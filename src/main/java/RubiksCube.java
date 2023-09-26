@@ -112,7 +112,6 @@ public class RubiksCube {
 	}
 
 	public void render(Matrix4f viewProjection, Vector3f camPos) {
-
 		renderSort.setCamPos(camPos);
 		cubes.sort(renderSort);
 

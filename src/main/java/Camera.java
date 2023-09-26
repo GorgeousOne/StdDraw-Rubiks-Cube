@@ -28,14 +28,7 @@ public class Camera {
 	}
 
 	public Matrix4f getView() {
-		// Calculate the camera's position based on yaw, pitch, and distance
-		Vector3f position = getPos();
-
-		// Create a view matrix to look at the target from the calculated position
-		Matrix4f viewMatrix = new Matrix4f();
-		viewMatrix.lookAt(position, target, UP);
-
-		return viewMatrix;
+		return new Matrix4f().lookAt(getPos(), target, UP);
 	}
 
 	public Matrix4f getProjection(float aspectRatio) {
