@@ -5,41 +5,71 @@ import java.awt.event.KeyEvent;
 
 public class Main {
 
-	private static boolean requestExit;
+	private Camera cam;
+	private RubiksCube box;
+	private float aspect;
 
-	public static void main(String[] args) {
-		StdDraw.enableDoubleBuffering();
+	private float pMouseX;
+	private float pMouseY;
+	private float mouseSensitivity;
 
-		int w = 800;
-		int h = 500;
+	private boolean requestExit;
 
-		StdDraw.setCanvasSize(w, h);
-		float aspect = 1f * w / h;
-
-		Camera cam = new Camera(new Vector3f(), 2, 0, -30, 60);
-
-		float size = 0.5f;
-//		AABB box = new AABB(size, size, size);
-		RubiksCube box = new RubiksCube(size);
+	Main() {
+		mouseSensitivity = 150;
+		cam = new Camera(new Vector3f(), 2, 0, -30, 60);
+		box = new RubiksCube(0.5f);
 		StdDraw.setPenRadius(0.006);
+		setGameSize(800, 600);
+
+		runGameLoop();
+	}
+
+	private void setGameSize(int w, int h) {
+		StdDraw.setCanvasSize(w, h);
+		this.aspect = 1f * w / h;
+//		StdDraw.setXscale(-w / 2f, w / 2f);
+	}
+
+	private void runGameLoop() {
+		StdDraw.enableDoubleBuffering();
+		pMouseX = (float) StdDraw.mouseX();
+		pMouseY = (float) StdDraw.mouseY();
 
 		while (!requestExit) {
 			if (StdDraw.isKeyPressed(KeyEvent.VK_ESCAPE)) {
 				requestExit = true;
 			}
-			Matrix4f projection = cam.getProjection(aspect);
-			Matrix4f view = cam.getView();
-
-//			Matrix4f eye = new Matrix4f().identity();
-//			box.render(eye, projection.mul(view), cam.getPos());
-			box.render(projection.mul(view), cam.getPos());
-			cam.move((float) Math.PI / 2f, 0);
+			handleMouseInput();
+			render();
 
 			StdDraw.show();
 			StdDraw.pause(15);
 			StdDraw.clear();
 		}
 		System.exit(0);
+	}
+
+	private void render() {
+		Matrix4f projection = cam.getProjection(aspect);
+		Matrix4f view = cam.getView();
+
+		box.render(projection.mul(view), cam.getPos());
+	}
+
+	private void handleMouseInput() {
+		float mouseX = (float) StdDraw.mouseX();
+		float mouseY = (float) StdDraw.mouseY();
+
+		if (StdDraw.isMousePressed()) {
+			float dx = mouseX - pMouseX;
+			float dy = mouseY - pMouseY;
+			cam.move(-dx * mouseSensitivity,
+					-dy * mouseSensitivity);
+		}
+
+		pMouseX = mouseX;
+		pMouseY = mouseY;
 	}
 
 	public static void printMatrix(Matrix4f matrix) {
@@ -51,4 +81,7 @@ public class Main {
 		}
 	}
 
+	public static void main(String[] args) {
+		new Main();
+	}
 }
