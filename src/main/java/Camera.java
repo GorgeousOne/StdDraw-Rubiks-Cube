@@ -1,51 +1,75 @@
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Math;
 
 public class Camera {
-	private Vector3f pos;
-	private Vector3f viewDir;
+	private Vector3f target; // Target point to orbit around
+	private float distance; // Distance from the target point
+	private float yaw; // Yaw angle (horizontal rotation)
+	private float pitch; // Pitch angle (vertical rotation)
 	private float fov; // Field of View (in degrees)
 
-	public Camera(Vector3f pos, Vector3f viewDirection, float fov) {
-		this.pos = pos;
-		this.viewDir = viewDirection;
+	public Camera(Vector3f target, float distance, float yaw, float pitch, float fov) {
+		this.target = target;
+		this.distance = distance;
+		this.yaw = yaw;
+		this.pitch = pitch;
 		this.fov = fov;
 	}
 
+	public void move(float deltaYaw, float deltaPitch) {
+		// Update yaw, pitch, and distance based on input deltas
+		yaw += deltaYaw;
+		pitch += deltaPitch;
+		// Ensure pitch stays within [-90, 90] degrees
+		pitch = Math.min(90.0f, Math.max(-90.0f, pitch));
+	}
+
 	public Matrix4f getView() {
+		// Calculate the camera's position based on yaw, pitch, and distance
+		Vector3f position = new Vector3f(
+				target.x + distance * Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)),
+				target.y + distance * Math.sin(Math.toRadians(pitch)),
+				target.z + distance * Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))
+		);
+
+		// Create a view matrix to look at the target from the calculated position
 		Matrix4f viewMatrix = new Matrix4f();
-		viewMatrix.lookAt(pos, pos.add(viewDir, new Vector3f()), new Vector3f(0, 1, 0));
+		viewMatrix.lookAt(position, target, new Vector3f(0, 1, 0));
+
 		return viewMatrix;
 	}
 
 	public Matrix4f getProjection(float aspectRatio) {
 		Matrix4f projectionMatrix = new Matrix4f();
-		return projectionMatrix.perspective((float) Math.toRadians(fov), aspectRatio, 0.1f, 100f);
+		return projectionMatrix.perspective(Math.toRadians(fov), aspectRatio, 0.1f, 100f);
 	}
-
-	// Getter and Setter methods for position, view direction, and fov
 
 	public Vector3f getPos() {
-		return pos;
-	}
-
-	public void setPos(Vector3f newPos) {
-		this.pos = newPos;
+		return new Vector3f(
+				target.x + distance * Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)),
+				target.y + distance * Math.sin(Math.toRadians(pitch)),
+				target.z + distance * Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch))
+		);
 	}
 
 	public Vector3f getViewDir() {
-		return viewDir;
+		float x = (Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+		float y = (Math.sin(Math.toRadians(pitch)));
+		float z = (Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+		return new Vector3f(x, y, z).normalize();
+	}
+	// Getter and Setter methods for distance, yaw, pitch, and fov
+
+	public float getDistance() {
+		return distance;
 	}
 
-	public void setViewDir(Vector3f newViewDir) {
-		this.viewDir = newViewDir;
+	public float getYaw() {
+		return yaw;
 	}
 
-	public float getFov() {
-		return fov;
-	}
-
-	public void setFov(float fov) {
-		this.fov = fov;
+	public float getPitch() {
+		return pitch;
 	}
 }

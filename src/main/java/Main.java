@@ -9,15 +9,14 @@ public class Main {
 
 	public static void main(String[] args) {
 		StdDraw.enableDoubleBuffering();
-		StdDraw.setCanvasSize(800, 500);
 
-		float aspect = 800f / 500f;
+		int w = 800;
+		int h = 500;
 
-		Camera cam = new Camera(
-				new Vector3f(0.2f, 0f, -2f),
-				new Vector3f(0f, 0f, 1f),
-				90);
+		StdDraw.setCanvasSize(w, h);
+		float aspect = 1f * w / h;
 
+		Camera cam = new Camera(new Vector3f(), 5, 0, 0, 60);
 
 		float size = 0.5f;
 		AABB box = new AABB(size, size, size);
@@ -28,12 +27,11 @@ public class Main {
 			}
 			Matrix4f projection = cam.getProjection(aspect);
 			Matrix4f view = cam.getView();
-//			printMatrix(projection);
 
 			Matrix4f eye = new Matrix4f().identity();
 			box.drawPerspective(eye, projection.mul(view), cam.getViewDir());
-			cam.getPos().add(0.005f, 0f, 0f);
 
+			cam.move((float) Math.PI / 5f, 0.1f);
 			StdDraw.show();
 			StdDraw.clear();
 			StdDraw.pause(15);
