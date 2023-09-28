@@ -27,6 +27,9 @@ public class TwistAnim {
 
 		for (int dy = -1; dy <= 1; ++dy) {
 			for (int dz = -1; dz <= 1; ++dz) {
+				if (layerX == 0 && dy == 0 && dz == 0) {
+					continue;
+				}
 				newPerm[layerX + 1][dy + 1][dz + 1] = rubikPermuation[layerX + 1][(-dz + 1)][dy + 1];
 				affectedCubes.add(rubikPermuation[layerX + 1][dy + 1][dz + 1]);
 			}
@@ -45,6 +48,9 @@ public class TwistAnim {
 
 		for (int dx = -1; dx <= 1; ++dx) {
 			for (int dz = -1; dz <= 1; ++dz) {
+				if (layerY == 0 && dx == 0 && dz == 0) {
+					continue;
+				}
 				newPerm[dx + 1][layerY + 1][dz + 1] = rubikPermuation[(-dz + 1)][layerY + 1][dx + 1];
 				affectedCubes.add(rubikPermuation[dx + 1][layerY + 1][dz + 1]);
 			}
@@ -60,6 +66,9 @@ public class TwistAnim {
 
 		for (int dx = -1; dx <= 1; ++dx) {
 			for (int dy = -1; dy <= 1; ++dy) {
+				if (layerZ == 0 && dx == 0 && dy == 0) {
+					continue;
+				}
 				newPerm[dx + 1][dy + 1][layerZ + 1] = rubikPermuation[dy + 1][-dx + 1][layerZ + 1];
 				affectedCubes.add(rubikPermuation[dx + 1][dy + 1][layerZ + 1]);
 			}
@@ -78,25 +87,31 @@ public class TwistAnim {
 		}
 	}
 
-	public boolean isAffected(int cubeIdx) {
-		return affectedCubes.contains(cubeIdx);
-	}
 
 	void start() {
 		startTime = System.currentTimeMillis();
 	}
 
 	public float getProgress(long time) {
-//		return 0f;
 		float progress = (float) (time - startTime) / duration;
-		return Math.max(0, Math.min(1, progress));
+		progress = Math.max(0, Math.min(1, progress));
+		return smooth(progress);
+	}
+
+	private float smooth(float progress) {
+		return progress * progress * (3 - 2 * progress);
 	}
 
 	public int[][][] getNewPerm() {
 		return rubikPermuation;
 	}
+
 	public Matrix4f getRotation(long time) {
-		float angle = (float) Math.PI * 0.5f * getProgress(time);
+		float angle = (float) Math.PI * .5f * getProgress(time);
 		return new Matrix4f().rotate(angle, rotAxis);
+	}
+
+	public List<Integer> getAffectedCubes() {
+		return affectedCubes;
 	}
 }

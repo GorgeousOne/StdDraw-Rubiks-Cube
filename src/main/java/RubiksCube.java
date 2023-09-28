@@ -1,7 +1,7 @@
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,20 +33,16 @@ public class RubiksCube {
 	private Color RED = new Color(183, 18, 52);
 
 	private List<Cube> cubes;
-	private List<Cube> renderQueue;
-	private RenderSort renderSort;
 	private int[][][] cubesPermutation;
 	private TwistAnim twistAnim;
 
 	public RubiksCube(float size) {
 		this.cubesPermutation = new int[3][3][3];
 		computeCubes(size / 3);
-		this.renderSort = new RenderSort();
 	}
 
 	private void computeCubes(float cubeSize) {
 		cubes = new ArrayList<>();
-		renderQueue = new ArrayList<>();
 
 		for (int dx = -1; dx <= 1; ++dx) {
 			for (int dy = -1; dy <= 1; ++dy) {
@@ -59,7 +55,6 @@ public class RubiksCube {
 					updateColors(cube, dx, dy, dz);
 					cubesPermutation[dx + 1][dy + 1][dz + 1] = cubes.size();
 					cubes.add(cube);
-					renderQueue.add(cube);
 				}
 			}
 		}
@@ -90,7 +85,7 @@ public class RubiksCube {
 		this.twistAnim = anim;
 	}
 
-	public void render(Matrix4f viewProjection, Vector3f camPos) {
+	public void render(Matrix4f viewProjection, Vector3f camPos, RenderQueue renderQueue) {
 
 		long time = System.currentTimeMillis();
 
@@ -98,31 +93,21 @@ public class RubiksCube {
 			applyTwist();
 			twistAnim = null;
 		}
-
 		if (twistAnim != null) {
-			for (int i = 0; i < cubes.size(); ++i) {
-				Cube cube = cubes.get(i);
-
-				if (twistAnim.isAffected(i)) {
-					cube.setTemTransform(twistAnim.getRotation(time));
-				}
+			for (int i : twistAnim.getAffectedCubes()) {
+				cubes.get(i).setTempTransform(twistAnim.getRotation(time));
 			}
 		}
-		renderSort.setCamPos(camPos);
-		renderQueue.sort(renderSort);
-
-		for (Cube cube : renderQueue) {
-			cube.render(viewProjection, camPos);
+		for (Cube cube : cubes) {
+			cube.render(viewProjection, camPos, renderQueue);
 		}
 	}
 
 	private void applyTwist() {
-		for (int i = 0; i < cubes.size(); ++i) {
+		for (int i : twistAnim.getAffectedCubes()) {
 			Cube cube = cubes.get(i);
-			if (twistAnim.isAffected(i)) {
-				cube.addTransform(twistAnim.getRotation(System.currentTimeMillis()));
-				cube.setTemTransform(new Matrix4f().identity());
-			}
+			cube.addTransform(twistAnim.getRotation(System.currentTimeMillis()));
+			cube.setTempTransform(new Matrix4f().identity());
 		}
 		this.cubesPermutation = twistAnim.getNewPerm();
 	}
