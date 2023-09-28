@@ -9,10 +9,12 @@ public class Cube {
 	private final int[][] faces;       // 2D array to store the indices for each face of the cube
 	private final Vector4f[] normals;  // Array to store the normals for each face of the cube
 	private Matrix4f transform;   // Transformation matrix for the AABB
+	private Matrix4f temTransform;
 	private final Color[] faceColos;
 
 	public Cube(float size) {
 		this.transform = new Matrix4f().identity();
+		this.temTransform = new Matrix4f().identity();
 		this.vertices = computeVertices(0.5f * size);
 		this.faces = computeFaces();
 		this.normals = computeNormals();
@@ -71,19 +73,22 @@ public class Cube {
 		transform.mul(this.transform, this.transform);
 	}
 
+	public void setTemTransform(Matrix4f transform) {
+		this.temTransform = transform;
+	}
+
 	// Getter method for the transformation matrix
 	public Matrix4f getTransform() {
 		return transform;
 	}
 
-	public Vector3f getCenter(Matrix4f parentTransform) {
-		Vector4f center = parentTransform.mul(transform, new Matrix4f()).transform(new Vector4f());
+	public Vector3f getCenter() {
+		Vector4f center = temTransform.mul(transform, new Matrix4f()).transform(new Vector4f());
 		return new Vector3f(center.x, center.y, center.z);
 	}
 
-	// Function to draw visible faces with a parent and perspective transform
-	public void render(Matrix4f parentTransform, Matrix4f viewProjection, Vector3f camPos) {
-		Matrix4f combinedTransform = parentTransform.mul(transform, new Matrix4f());
+	public void render(Matrix4f viewProjection, Vector3f camPos) {
+		Matrix4f combinedTransform = temTransform.mul(transform, new Matrix4f());
 		Matrix4f inverseTransform = new Matrix4f(combinedTransform).invert();
 		Matrix4f viewProjectionCombined = viewProjection.mul(combinedTransform, new Matrix4f());
 		Vector4f inverseCamPos = inverseTransform.transform(new Vector4f(camPos.x, camPos.y, camPos.z, 1f));

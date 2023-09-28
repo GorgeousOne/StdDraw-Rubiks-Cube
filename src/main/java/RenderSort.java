@@ -12,15 +12,9 @@ public class RenderSort implements Comparator<Cube> {
 	}
 
 	public int compare(Cube a1, Cube a2) {
-		float distance1 = calculateDistanceFromCamera(a1, camPos);
-		float distance2 = calculateDistanceFromCamera(a2, camPos);
-		return Float.compare(distance2, distance1); // Reverse order (further away first)
-	}
-
-	private float calculateDistanceFromCamera(Cube cube, Vector3f cameraPos) {
-		// Calculate the center of the AABB in world space
-		Vector3f center = cube.getCenter(new Matrix4f().identity());
-		return cameraPos.distance(center);
+		float camDist1 = camPos.distance(a1.getCenter());
+		float camDist2 = camPos.distance(a2.getCenter());
+		return Float.compare(camDist2, camDist1);
 	}
 
 	@Override

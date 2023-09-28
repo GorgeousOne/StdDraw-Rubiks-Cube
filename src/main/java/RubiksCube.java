@@ -1,11 +1,9 @@
-import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class RubiksCube {
 
@@ -35,18 +33,20 @@ public class RubiksCube {
 	private Color RED = new Color(183, 18, 52);
 
 	private List<Cube> cubes;
+	private List<Cube> renderQueue;
 	private RenderSort renderSort;
-//	private Matrix4f[][][] cubeTransforms;
-	private Cube[][][] positions;
+	private int[][][] cubesPermutation;
+	private TwistAnim twistAnim;
 
 	public RubiksCube(float size) {
-		this.positions = new Cube[3][3][3];
-		this.cubes = computeCubes(size / 3);
+		this.cubesPermutation = new int[3][3][3];
+		computeCubes(size / 3);
 		this.renderSort = new RenderSort();
 	}
 
-	private List<Cube> computeCubes(float cubeSize) {
-		List<Cube> cubes = new ArrayList<>();
+	private void computeCubes(float cubeSize) {
+		cubes = new ArrayList<>();
+		renderQueue = new ArrayList<>();
 
 		for (int dx = -1; dx <= 1; ++dx) {
 			for (int dy = -1; dy <= 1; ++dy) {
@@ -57,12 +57,12 @@ public class RubiksCube {
 					Cube cube = new Cube(cubeSize);
 					cube.translate(dx * cubeSize, dy * cubeSize, dz * cubeSize);
 					updateColors(cube, dx, dy, dz);
+					cubesPermutation[dx + 1][dy + 1][dz + 1] = cubes.size();
 					cubes.add(cube);
-					positions[dx + 1][dy + 1][dz + 1] = cube;
+					renderQueue.add(cube);
 				}
 			}
 		}
-		return cubes;
 	}
 
 	private void updateColors(Cube cube, int dx, int dy, int dz) {
@@ -86,37 +86,48 @@ public class RubiksCube {
 		}
 	}
 
-	public void rotateFace(Facing facing, int turns) {
-		Matrix4f axisRot = new Matrix4f().rotate((float) Math.PI * 0.5f * turns, facing.dir);
-		Vector3f dir = facing.dir();
-
-		if (dir.x != 0) {
-			rotateFaceX((int) dir.x, axisRot);
-		} else if (dir.y != 0) {
-//			rotateFaceY((int) dir.y, axisRot);
-		} else if (dir.z != 0) {
-//			rotateFaceZ((int) dir.z, axisRot);
-		}
-	}
-
-	private void rotateFaceX(int dx, Matrix4f axisRot) {
-		for (int dy = -1; dy <= 1; ++dy) {
-			for (int dz = -1; dz <= 1; ++dz) {
-				if (dx == 0 && dy == 0 && dz == 0) {
-					continue;
-				}
-				Cube cube = positions[dx + 1][dy + 1][dz + 1];
-				cube.addTransform(axisRot);
-			}
-		}
+	public void animate(TwistAnim anim) {
+		this.twistAnim = anim;
 	}
 
 	public void render(Matrix4f viewProjection, Vector3f camPos) {
-		renderSort.setCamPos(camPos);
-		cubes.sort(renderSort);
 
-		for (Cube cube : cubes) {
-			cube.render(new Matrix4f().identity(), viewProjection, camPos);
+		long time = System.currentTimeMillis();
+
+		if (twistAnim != null && twistAnim.getProgress(time) >= 1) {
+			applyTwist();
+			twistAnim = null;
 		}
+
+		if (twistAnim != null) {
+			for (int i = 0; i < cubes.size(); ++i) {
+				Cube cube = cubes.get(i);
+
+				if (twistAnim.isAffected(i)) {
+					cube.setTemTransform(twistAnim.getRotation(time));
+				}
+			}
+		}
+		renderSort.setCamPos(camPos);
+		renderQueue.sort(renderSort);
+
+		for (Cube cube : renderQueue) {
+			cube.render(viewProjection, camPos);
+		}
+	}
+
+	private void applyTwist() {
+		for (int i = 0; i < cubes.size(); ++i) {
+			Cube cube = cubes.get(i);
+			if (twistAnim.isAffected(i)) {
+				cube.addTransform(twistAnim.getRotation(System.currentTimeMillis()));
+				cube.setTemTransform(new Matrix4f().identity());
+			}
+		}
+		this.cubesPermutation = twistAnim.getNewPerm();
+	}
+
+	public int[][][] getPerm() {
+		return cubesPermutation;
 	}
 }

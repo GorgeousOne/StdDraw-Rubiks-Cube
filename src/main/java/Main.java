@@ -21,10 +21,13 @@ public class Main {
 		mouseSensitivity = 200;
 		cam = new Camera(new Vector3f(), 2, 30, 25, 60);
 		box = new RubiksCube(0.5f);
-		sphere = new SpotSphere(10f, 200, 0.01f);
-		
-		box.rotateFace(RubiksCube.Facing.LEFT, 1);
-		box.rotateFace(RubiksCube.Facing.RIGHT, -2);
+		sphere = new SpotSphere(10f, 100, 0.01f);
+
+		TwistAnim twist = new TwistAnim(5000, box.getPerm());
+		twist.twistX(1);
+		twist.start();
+		box.animate(twist);
+
 		setGameSize(800, 600);
 		runGameLoop();
 	}
@@ -32,7 +35,7 @@ public class Main {
 	private void setGameSize(int w, int h) {
 		StdDraw.setCanvasSize(w, h);
 		this.aspect = 1f * w / h;
-//		StdDraw.setXscale(-w / 2f, w / 2f);
+		//StdDraw.setXscale(-w / 2f, w / 2f);
 	}
 
 	private void runGameLoop() {
