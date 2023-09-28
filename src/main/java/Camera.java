@@ -24,18 +24,11 @@ public class Camera {
 		yaw += deltaYaw;
 		pitch += deltaPitch;
 		// Ensure pitch stays within [-90, 90] degrees
-		pitch = Math.min(90.0f, Math.max(-90.0f, pitch));
+		pitch = Math.min(89.9f, Math.max(-89.9f, pitch));
 	}
 
 	public Matrix4f getView() {
-		// Calculate the camera's position based on yaw, pitch, and distance
-		Vector3f position = getPos();
-
-		// Create a view matrix to look at the target from the calculated position
-		Matrix4f viewMatrix = new Matrix4f();
-		viewMatrix.lookAt(position, target, UP);
-
-		return viewMatrix;
+		return new Matrix4f().lookAt(getPos(), target, UP);
 	}
 
 	public Matrix4f getProjection(float aspectRatio) {
