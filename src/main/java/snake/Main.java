@@ -19,6 +19,9 @@ public class Main {
 	private List<Tile> tiles;
 	private Snake snake;
 	private Apple apple;
+	private int score = 0;
+	private boolean isGameOver = false;
+	private StdButton restartButton;
 
 	private Random rnd = new Random();
 
@@ -32,7 +35,24 @@ public class Main {
 		snake = new Snake(0, 4, gameWidth, gameHeight, tileSize);
 		spawnApple();
 
+		restartButton = new StdButton(0, 0, 100, 50);
+		restartButton.setText("Restart");
+		restartButton.setAction(() -> restartGame());
+
 		runGameLoop();
+
+	}
+
+	private void restartGame() {
+		isGameOver = false;
+		score = 0;
+		snake = new Snake(0, 4, gameWidth, gameHeight, tileSize);
+		spawnApple();
+		accumulator = -3 * moveInterval;
+		moveX = 1;
+		moveY = 0;
+		lastMoveX = 1;
+		lastMoveY = 0;
 	}
 
 	private void createTiles(int countX, int countY, double tileSize) {
@@ -62,7 +82,7 @@ public class Main {
 	}
 
 	long accumulator = 0;
-	long moveInterval = 500;
+	long moveInterval = 400;
 	int moveX = 1;
 	int moveY = 0;
 	int lastMoveX = 0;
@@ -93,9 +113,16 @@ public class Main {
 			tile.render();
 		}
 		getMovementInput();
-		moveSnake();
+
+		if (!isGameOver) {
+			moveSnake();
+		}
 		apple.render();
 		snake.render();
+
+		if (isGameOver) {
+			restartButton.update();
+		}
 	}
 
 	private void getMovementInput() {
@@ -123,35 +150,24 @@ public class Main {
 	}
 
 	private void moveSnake() {
-		if (accumulator > moveInterval) {
-			snake.move(moveX, moveY);
-			lastMoveX = moveX;
-			lastMoveY = moveY;
-			accumulator -= moveInterval;
-
-			if (snake.checkCollision()) {
-				System.out.println("Game over!");
-				System.exit(0);
-			}
-
-			if (checkAppleCollision()) {
-				snake.grow();
-				spawnApple();
-			}
+		if (accumulator < moveInterval) {
+			return;
 		}
-	}
+		snake.move(moveX, moveY);
+		lastMoveX = moveX;
+		lastMoveY = moveY;
+		accumulator -= moveInterval;
 
-	void drawSnakeField(int width, int height, float size) {
-		StdDraw.setPenColor(StdDraw.BLACK);
-		StdDraw.setPenRadius(0.005);
+		if (snake.checkCollision()) {
+			isGameOver = true;
+		}
 
-		float offx = -0.5f * width * size + 0.5f * size;
-		float offy = -0.5f * height * size + 0.5f * size;
-
-		for (int y = 0; y < height; ++y) {
-			for (int x = 0; x < width; ++x) {
-				StdDraw.square(offx + x * size, offy + y * size, 0.5f * size);
+		if (checkAppleCollision()) {
+			if (snake.length() < gameWidth * gameHeight - 1) {
+				snake.grow();
 			}
+			++score;
+			spawnApple();
 		}
 	}
 

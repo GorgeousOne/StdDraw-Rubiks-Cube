@@ -97,4 +97,8 @@ public class Snake {
 	public int getHeadY() {
 		return bodyYs.get(0);
 	}
+
+	public int length() {
+		return length;
+	}
 }
