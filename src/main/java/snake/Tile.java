@@ -9,16 +9,12 @@ public class Tile {
 	private double size;
 	private int x;
 	private int y;
-	private int maxX;
-	private int maxY;
 	private Color color;
 	
-	public Tile(double size, int x, int y, int maxX, int maxY) {
+	public Tile(double size, int x, int y) {
 		this.size = size;
 		this.x = x;
 		this.y = y;
-		this.maxX = maxX;
-		this.maxY = maxY;
 		this.color = Color.GREEN;
 	}
 
@@ -27,8 +23,8 @@ public class Tile {
 	}
 
 	public void render() {
-		double offX = x - 0.5 * maxX + 0.5;
-		double offY = y - 0.5 * maxY + 0.5;
+		double offX = x + 0.5;
+		double offY = y + 0.5;
 
 		StdDraw.setPenColor(color);
 		StdDraw.filledSquare(offX * size, offY * size, 0.5f * size);

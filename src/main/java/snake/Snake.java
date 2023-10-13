@@ -7,17 +7,15 @@ import java.util.List;
 
 public class Snake {
 
-	private int maxX;
-	private int maxY;
+	private int gameSize;
 	private double size;
 
 	private int length;
 	private List<Integer> bodyXs;
 	private List<Integer> bodyYs;
 
-	public Snake(int x, int y, int maxX, int maxY, double size) {
-		this.maxX = maxX;
-		this.maxY = maxY;
+	public Snake(int x, int y, int gameSize, double size) {
+		this.gameSize = gameSize;
 		this.size = size;
 		bodyXs = new ArrayList<>();
 		bodyYs = new ArrayList<>();
@@ -44,7 +42,7 @@ public class Snake {
 		int headX = bodyXs.get(0);
 		int headY = bodyYs.get(0);
 
-		if (headX < 0 || headX >= maxX || headY < 0 || headY >= maxY) {
+		if (headX < 0 || headX >= gameSize || headY < 0 || headY >= gameSize) {
 			return true;
 		}
 
@@ -62,8 +60,8 @@ public class Snake {
 	}
 
 	public void render() {
-		double offX = -0.5 * maxX + 0.5;
-		double offY = -0.5 * maxY + 0.5;
+		double offX = 0.5;
+		double offY = 0.5;
 		StdDraw.setPenColor(StdDraw.RED);
 		StdDraw.setPenRadius(0.05);
 

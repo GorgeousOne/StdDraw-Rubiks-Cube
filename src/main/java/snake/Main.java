@@ -2,41 +2,33 @@ package snake;
 
 import lib.StdDraw;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Main {
 
-	int w = 800;
-	int h = 600;
-	int gamePxHeight = 400;
-	int gameWidth = 10;
-	int gameHeight = 10;
-	float tileSize = gamePxHeight / gameHeight;
+	int windowSize = 400;
+	int gameSize = 10;
+	float tileSize = 1f * windowSize / gameSize;
 
-	private List<Tile> tiles;
 	private Snake snake;
 	private Apple apple;
 	private int score = 0;
 	private boolean isGameOver = false;
-	private StdButton restartButton;
-	private int buttonX;
+	private final StdButton restartButton;
 
-	private Random rnd = new Random();
+	private final Random rnd = new Random();
+
 	Main() {
-		StdDraw.setCanvasSize(w, h);
-		StdDraw.setXscale(-w/2, w/2);
-		StdDraw.setYscale(-h/2, h/2);
+		StdDraw.setCanvasSize(windowSize, windowSize);
+		StdDraw.setXscale(0, windowSize);
+		StdDraw.setYscale(0, windowSize);
 
-		tiles = new ArrayList<>();
-		createTiles(gameWidth, gameHeight, tileSize);
-		snake = new Snake(0, 4, gameWidth, gameHeight, tileSize);
+		snake = new Snake(0, 4, gameSize, tileSize);
 		spawnApple();
 
-		buttonX = gamePxHeight / 2 + (w - gamePxHeight) / 4;
-		restartButton = new StdButton(buttonX, 0, 100, 100);
+		restartButton = new StdButton(windowSize /2, windowSize/2, 100, 100);
 		restartButton.setText("Restart");
 		restartButton.setAction(() -> restartGame());
 
@@ -46,7 +38,7 @@ public class Main {
 	private void restartGame() {
 		isGameOver = false;
 		score = 0;
-		snake = new Snake(0, 4, gameWidth, gameHeight, tileSize);
+		snake = new Snake(0, 4, gameSize, tileSize);
 		spawnApple();
 		accumulator = -3 * moveInterval;
 		moveX = 1;
@@ -55,30 +47,14 @@ public class Main {
 		lastMoveY = 0;
 	}
 
-	private void createTiles(int countX, int countY, double tileSize) {
-
-		for (int y = 0; y < countY; ++y) {
-			for (int x = 0; x < countX; ++x) {
-				Tile tile = new Tile(tileSize, x, y, countX, countY);
-				tile.setColor((x + y) % 2 == 0 ? StdDraw.BOOK_BLUE : StdDraw.BOOK_LIGHT_BLUE);
-				tiles.add(tile);
-			}
-		}
-	}
-
 	private void spawnApple() {
-		int x = rnd.nextInt(gameWidth);
-		int y = rnd.nextInt(gameHeight);
-		apple = new Apple(gamePxHeight / 10d, x, y, gameWidth, gameHeight);
+		int x = rnd.nextInt(gameSize);
+		int y = rnd.nextInt(gameSize);
+		apple = new Apple(tileSize, x, y);
 	}
 
 	private boolean checkAppleCollision() {
-		int headX = snake.getHeadX();
-		int headY = snake.getHeadY();
-		int appleX = apple.getX();
-		int appleY = apple.getY();
-
-		return headX == appleX && headY == appleY;
+		return snake.getHeadX() == apple.getX() && snake.getHeadY() == apple.getY();
 	}
 
 	long accumulator = 0;
@@ -109,20 +85,33 @@ public class Main {
 	}
 
 	void update() {
-		for (Tile tile : tiles) {
-			tile.render();
-		}
 		getMovementInput();
 
 		if (!isGameOver) {
 			moveSnake();
 		}
+
+		renderTiles();
 		apple.render();
 		snake.render();
-		StdDraw.text(-buttonX, 0, "Score: " + score);
+		StdDraw.textLeft(0, 50, "Score: " + score);
 
 		if (isGameOver) {
 			restartButton.update();
+		}
+	}
+
+	private void renderTiles() {
+		for (int y = 0; y < gameSize; ++y) {
+			for (int x = 0; x < gameSize; ++x) {
+				double offX = x + 0.5;
+				double offY = y + 0.5;
+
+				Color color = (x + y) % 2 == 0 ? StdDraw.BOOK_BLUE : StdDraw.BOOK_LIGHT_BLUE;
+				StdDraw.setPenColor(color);
+				StdDraw.filledSquare(offX * tileSize, offY * tileSize, 0.5f * tileSize);
+
+			}
 		}
 	}
 
@@ -164,7 +153,7 @@ public class Main {
 		}
 
 		if (checkAppleCollision()) {
-			if (snake.length() < gameWidth * gameHeight - 1) {
+			if (snake.length() < gameSize * gameSize - 1) {
 				snake.grow();
 			}
 			++score;
