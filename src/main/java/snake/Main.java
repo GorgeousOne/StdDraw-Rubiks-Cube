@@ -22,9 +22,9 @@ public class Main {
 	private int score = 0;
 	private boolean isGameOver = false;
 	private StdButton restartButton;
+	private int buttonX;
 
 	private Random rnd = new Random();
-
 	Main() {
 		StdDraw.setCanvasSize(w, h);
 		StdDraw.setXscale(-w/2, w/2);
@@ -35,12 +35,12 @@ public class Main {
 		snake = new Snake(0, 4, gameWidth, gameHeight, tileSize);
 		spawnApple();
 
-		restartButton = new StdButton(0, 0, 100, 50);
+		buttonX = gamePxHeight / 2 + (w - gamePxHeight) / 4;
+		restartButton = new StdButton(buttonX, 0, 100, 100);
 		restartButton.setText("Restart");
 		restartButton.setAction(() -> restartGame());
 
 		runGameLoop();
-
 	}
 
 	private void restartGame() {
@@ -119,6 +119,7 @@ public class Main {
 		}
 		apple.render();
 		snake.render();
+		StdDraw.text(-buttonX, 0, "Score: " + score);
 
 		if (isGameOver) {
 			restartButton.update();
@@ -167,6 +168,10 @@ public class Main {
 				snake.grow();
 			}
 			++score;
+
+			if (score % 3 == 0) {
+				moveInterval = Math.max(150, moveInterval - 50);
+			}
 			spawnApple();
 		}
 	}
