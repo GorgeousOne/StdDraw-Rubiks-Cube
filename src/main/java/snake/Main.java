@@ -83,8 +83,9 @@ public class Main {
 			lastMoveY = moveY;
 			accumulator -= moveInterval;
 
-			if (rnd.nextFloat() > 0.5) {
-				snake.grow();
+			if (snake.checkCollision()) {
+				System.out.println("Game over!");
+				System.exit(0);
 			}
 		}
 		snake.render();

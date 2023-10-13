@@ -35,8 +35,26 @@ public class Snake {
 	public void move(int dx, int dy) {
 		int newX = bodyXs.get(0) + dx;
 		int newY = bodyYs.get(0) + dy;
+
 		bodyXs.add(0, newX);
 		bodyYs.add(0, newY);
+	}
+
+	public boolean checkCollision() {
+		int headX = bodyXs.get(0);
+		int headY = bodyYs.get(0);
+
+		if (headX < 0 || headX >= maxX || headY < 0 || headY >= maxY) {
+			return true;
+		}
+
+		for (int i = 1; i < length; ++i) {
+			if (headX == bodyXs.get(i) && headY == bodyYs.get(i)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public void grow() {
