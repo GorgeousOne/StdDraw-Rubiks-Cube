@@ -11,8 +11,16 @@ public class Main {
 
 	int w = 800;
 	int h = 600;
+	int gamePxHeight = 400;
+	int gameWidth = 10;
+	int gameHeight = 10;
+	float tileSize = gamePxHeight / gameHeight;
+
 	private List<Tile> tiles;
 	private Snake snake;
+	private Apple apple;
+
+	private Random rnd = new Random();
 
 	Main() {
 		StdDraw.setCanvasSize(w, h);
@@ -20,15 +28,10 @@ public class Main {
 		StdDraw.setYscale(-h/2, h/2);
 
 		tiles = new ArrayList<>();
-
-		int gamePxHeight = 400;
-		int gameWidth = 10;
-		int gameHeight = 10;
-		double tileSize = gamePxHeight / 10d;
-
 		createTiles(gameWidth, gameHeight, tileSize);
-
 		snake = new Snake(0, 4, gameWidth, gameHeight, tileSize);
+		spawnApple();
+
 		runGameLoop();
 	}
 
@@ -41,6 +44,12 @@ public class Main {
 				tiles.add(tile);
 			}
 		}
+	}
+
+	private void spawnApple() {
+		int x = rnd.nextInt(gameWidth);
+		int y = rnd.nextInt(gameHeight);
+		apple = new Apple(gamePxHeight / 10d, x, y, gameWidth, gameHeight);
 	}
 
 	long accumulator = 0;
@@ -70,24 +79,13 @@ public class Main {
 		System.exit(0);
 	}
 
-	Random rnd = new Random();
 	void update() {
 		for (Tile tile : tiles) {
 			tile.render();
 		}
 		getMovementInput();
-
-		if (accumulator > moveInterval) {
-			snake.move(moveX, moveY);
-			lastMoveX = moveX;
-			lastMoveY = moveY;
-			accumulator -= moveInterval;
-
-			if (snake.checkCollision()) {
-				System.out.println("Game over!");
-				System.exit(0);
-			}
-		}
+		moveSnake();
+		apple.render();
 		snake.render();
 	}
 
@@ -111,6 +109,20 @@ public class Main {
 			if (lastMoveY == 0) {
 				moveX = 0;
 				moveY = -1;
+			}
+		}
+	}
+
+	private void moveSnake() {
+		if (accumulator > moveInterval) {
+			snake.move(moveX, moveY);
+			lastMoveX = moveX;
+			lastMoveY = moveY;
+			accumulator -= moveInterval;
+
+			if (snake.checkCollision()) {
+				System.out.println("Game over!");
+				System.exit(0);
 			}
 		}
 	}
