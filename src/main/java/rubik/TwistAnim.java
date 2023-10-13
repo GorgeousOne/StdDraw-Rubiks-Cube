@@ -1,3 +1,5 @@
+package rubik;
+
 import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

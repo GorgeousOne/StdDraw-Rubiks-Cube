@@ -1,9 +1,11 @@
+package rubik;
+
+import lib.StdDraw;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.joml.Vector3f;
 
 import java.awt.Color;
-import java.util.Arrays;
 
 public class Cube {
 	// Array to store the 8 vertices of the AABB

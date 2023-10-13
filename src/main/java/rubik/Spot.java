@@ -1,3 +1,6 @@
+package rubik;
+
+import lib.StdDraw;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
