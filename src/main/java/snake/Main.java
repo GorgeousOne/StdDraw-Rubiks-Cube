@@ -11,6 +11,7 @@ public class Main {
 	int w = 800;
 	int h = 600;
 	private List<Tile> tiles;
+	private Snake snake;
 
 	Main() {
 		StdDraw.setCanvasSize(w, h);
@@ -18,12 +19,33 @@ public class Main {
 		StdDraw.setYscale(-h/2, h/2);
 
 		tiles = new ArrayList<>();
-		createTiles(10, 10, 400);
+
+		int gamePxHeight = 400;
+		int gameWidth = 10;
+		int gameHeight = 10;
+		double tileSize = gamePxHeight / 10d;
+
+		createTiles(gameWidth, gameHeight, tileSize);
+
+		snake = new Snake(0, 4, gameWidth, gameHeight, tileSize);
+		snake.move(1, 0);
+		snake.move(1, 0);
+		snake.move(1, 0);
+		snake.move(1, 0);
+		snake.move(0, 1);
+		snake.move(0, 1);
+		snake.grow();
+		snake.grow();
+		snake.grow();
+		snake.grow();
+		snake.grow();
+		snake.grow();
+
+
 		runGameLoop();
 	}
 
-	private void createTiles(int countX, int countY, double height) {
-		double tileSize = height / countY;
+	private void createTiles(int countX, int countY, double tileSize) {
 
 		for (int y = 0; y < countY; ++y) {
 			for (int x = 0; x < countX; ++x) {
@@ -54,6 +76,8 @@ public class Main {
 		for (Tile tile : tiles) {
 			tile.render();
 		}
+
+		snake.render();
 	}
 
 	void drawSnakeField(int width, int height, float size) {
