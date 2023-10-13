@@ -3,17 +3,35 @@ package snake;
 import lib.StdDraw;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
 	int w = 800;
 	int h = 600;
+	private List<Tile> tiles;
 
 	Main() {
 		StdDraw.setCanvasSize(w, h);
 		StdDraw.setXscale(-w/2, w/2);
 		StdDraw.setYscale(-h/2, h/2);
+
+		tiles = new ArrayList<>();
+		createTiles(10, 10, 400);
 		runGameLoop();
+	}
+
+	private void createTiles(int countX, int countY, double height) {
+		double tileSize = height / countY;
+
+		for (int y = 0; y < countY; ++y) {
+			for (int x = 0; x < countX; ++x) {
+				Tile tile = new Tile(tileSize, x, y, countX, countY);
+				tile.setColor((x + y) % 2 == 0 ? StdDraw.BOOK_BLUE : StdDraw.BOOK_LIGHT_BLUE);
+				tiles.add(tile);
+			}
+		}
 	}
 
 	private void runGameLoop() {
@@ -33,7 +51,9 @@ public class Main {
 	}
 
 	void update() {
-		drawSnakeField(10, 10,50);
+		for (Tile tile : tiles) {
+			tile.render();
+		}
 	}
 
 	void drawSnakeField(int width, int height, float size) {
