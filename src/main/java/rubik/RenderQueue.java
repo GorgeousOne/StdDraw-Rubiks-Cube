@@ -1,3 +1,6 @@
+package rubik;
+
+import lib.StdDraw;
 import org.joml.Vector3f;
 
 import java.awt.Color;
