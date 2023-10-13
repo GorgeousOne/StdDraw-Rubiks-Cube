@@ -2,16 +2,16 @@ package snake;
 
 import lib.StdDraw;
 
-public class StdButton {
+public class Button {
 
-	private int x;
-	private int y;
-	private int width;
-	private int height;
+	private double x;
+	private double y;
+	private double width;
+	private double height;
 	private String text;
 	private Runnable action;
 
-	public StdButton(int x, int y, int width, int height) {
+	public Button(double x, double y, double width, double height) {
 		this.x = x;
 		this.y = y;
 		this.width  = width;

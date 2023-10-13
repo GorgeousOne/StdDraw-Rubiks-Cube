@@ -63,7 +63,8 @@ public class Snake {
 		double offX = 0.5;
 		double offY = 0.5;
 		StdDraw.setPenColor(StdDraw.RED);
-		StdDraw.setPenRadius(0.05);
+
+		StdDraw.setPenRadius(size / 800);
 
 		for (int i = 0; i < length - 1; ++i) {
 			StdDraw.line(
@@ -73,6 +74,7 @@ public class Snake {
 					(bodyYs.get(i + 1) + offY) * size);
 		}
 
+		//Extra credit: draw eyes on the snake's head
 		int headX = getHeadX();
 		int headY = getHeadY();
 		int tailX = bodyXs.get(1);
