@@ -30,4 +30,12 @@ public class Apple {
 		StdDraw.setPenColor(color);
 		StdDraw.filledCircle(offX * size, offY * size, 0.4f * size);
 	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
 }

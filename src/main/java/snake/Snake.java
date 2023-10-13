@@ -75,10 +75,9 @@ public class Snake {
 					(bodyYs.get(i + 1) + offY) * size);
 		}
 
-		int headX = bodyXs.get(0);
-		int headY = bodyYs.get(0);
+		int headX = getHeadX();
+		int headY = getHeadY();
 		int tailX = bodyXs.get(1);
-		int tailY = bodyYs.get(1);
 
 		StdDraw.setPenColor(StdDraw.BLACK);
 
@@ -89,5 +88,13 @@ public class Snake {
 			StdDraw.filledCircle((headX + 0.25 + offX) * size, (headY + offY) * size, 0.1 * size);
 			StdDraw.filledCircle((headX - 0.25 + offX) * size, (headY + offY) * size, 0.1 * size);
 		}
+	}
+
+	public int getHeadX() {
+		return bodyXs.get(0);
+	}
+
+	public int getHeadY() {
+		return bodyYs.get(0);
 	}
 }

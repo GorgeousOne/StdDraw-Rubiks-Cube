@@ -52,6 +52,15 @@ public class Main {
 		apple = new Apple(gamePxHeight / 10d, x, y, gameWidth, gameHeight);
 	}
 
+	private boolean checkAppleCollision() {
+		int headX = snake.getHeadX();
+		int headY = snake.getHeadY();
+		int appleX = apple.getX();
+		int appleY = apple.getY();
+
+		return headX == appleX && headY == appleY;
+	}
+
 	long accumulator = 0;
 	long moveInterval = 500;
 	int moveX = 1;
@@ -123,6 +132,11 @@ public class Main {
 			if (snake.checkCollision()) {
 				System.out.println("Game over!");
 				System.exit(0);
+			}
+
+			if (checkAppleCollision()) {
+				snake.grow();
+				spawnApple();
 			}
 		}
 	}
