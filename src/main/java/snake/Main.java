@@ -5,6 +5,7 @@ import lib.StdDraw;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Main {
 
@@ -28,20 +29,6 @@ public class Main {
 		createTiles(gameWidth, gameHeight, tileSize);
 
 		snake = new Snake(0, 4, gameWidth, gameHeight, tileSize);
-		snake.move(1, 0);
-		snake.move(1, 0);
-		snake.move(1, 0);
-		snake.move(1, 0);
-		snake.move(0, 1);
-		snake.move(0, 1);
-		snake.grow();
-		snake.grow();
-		snake.grow();
-		snake.grow();
-		snake.grow();
-		snake.grow();
-
-
 		runGameLoop();
 	}
 
@@ -56,13 +43,24 @@ public class Main {
 		}
 	}
 
+	long accumulator = 0;
+	long moveInterval = 500;
+	int moveX = 1;
+	int moveY = 0;
+	int lastMoveX = 0;
+	int lastMoveY = 0;
+
 	private void runGameLoop() {
 		StdDraw.enableDoubleBuffering();
+		long lastTime = System.currentTimeMillis();
 
 		while (true) {
 			if (StdDraw.isKeyPressed(KeyEvent.VK_ESCAPE)) {
 				break;
 			}
+
+			accumulator += System.currentTimeMillis() - lastTime;
+			lastTime = System.currentTimeMillis();
 
 			update();
 			StdDraw.show();
@@ -72,12 +70,48 @@ public class Main {
 		System.exit(0);
 	}
 
+	Random rnd = new Random();
 	void update() {
 		for (Tile tile : tiles) {
 			tile.render();
 		}
+		getMovementInput();
 
+		if (accumulator > moveInterval) {
+			snake.move(moveX, moveY);
+			lastMoveX = moveX;
+			lastMoveY = moveY;
+			accumulator -= moveInterval;
+
+			if (rnd.nextFloat() > 0.5) {
+				snake.grow();
+			}
+		}
 		snake.render();
+	}
+
+	private void getMovementInput() {
+		if (StdDraw.isKeyPressed(KeyEvent.VK_LEFT)) {
+			if (lastMoveX == 0) {
+				moveX = -1;
+				moveY = 0;
+			}
+		} else if (StdDraw.isKeyPressed(KeyEvent.VK_RIGHT)) {
+			if (lastMoveX == 0) {
+				moveX = 1;
+				moveY = 0;
+			}
+		} else if (StdDraw.isKeyPressed(KeyEvent.VK_UP)) {
+			if (lastMoveY == 0) {
+				moveX = 0;
+				moveY = 1;
+			}
+		} else if (StdDraw.isKeyPressed(KeyEvent.VK_DOWN)) {
+			if (lastMoveY == 0) {
+				moveX = 0;
+				moveY = -1;
+			}
+		}
 	}
 
 	void drawSnakeField(int width, int height, float size) {

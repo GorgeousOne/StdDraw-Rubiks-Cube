@@ -25,6 +25,11 @@ public class Snake {
 		length = 1;
 		bodyXs.add(x);
 		bodyYs.add(y);
+
+		move(1, 0);
+		move(1, 0);
+		grow();
+		grow();
 	}
 
 	public void move(int dx, int dy) {
