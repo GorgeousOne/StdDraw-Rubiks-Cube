@@ -4,6 +4,10 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Math;
 
+/**
+ * A class that represents a camera orbiting a target point in 3D space with a yaw and pitch angle.
+ * It can be used to generate view and projection transform matrices.
+ */
 public class Camera {
 
 	private final static Vector3f UP = new Vector3f(0, 1, 0);
@@ -21,6 +25,9 @@ public class Camera {
 		this.fov = fov;
 	}
 
+	/**
+	 * Rotates the camera based on the input delta values.
+	 */
 	public void move(float deltaYaw, float deltaPitch) {
 		// Update yaw, pitch, and distance based on input deltas
 		yaw += deltaYaw;
@@ -28,20 +35,23 @@ public class Camera {
 		// Ensure pitch stays within [-90, 90] degrees
 		pitch = Math.min(89.9f, Math.max(-89.9f, pitch));
 	}
-
-	public Matrix4f getView() {
-		return new Matrix4f().lookAt(getPos(), target, UP);
-	}
-
-	public Matrix4f getProjection(float aspectRatio) {
-		Matrix4f projectionMatrix = new Matrix4f();
-		return projectionMatrix.perspective(Math.toRadians(fov), aspectRatio, 0.1f, 100f);
+	
+	/**
+	 * Returns the projection transform matrix to transform points from camera space to clip space.
+	 */
+	public Matrix4f getViewProjection(float aspectRatio) {
+		Matrix4f viewTransform = new Matrix4f().lookAt(getPos(), target, UP);
+		Matrix4f projectTransform = new Matrix4f().perspective(Math.toRadians(fov), aspectRatio, 0.1f, 100f);
+		return projectTransform.mul(viewTransform);
 	}
 
 	public Vector3f getPos() {
 		return new Vector3f(target).add(getViewDir().mul(-distance));
 	}
 
+	/**
+	 * Returns the forward vector of the camera.
+	 */
 	public Vector3f getViewDir() {
 		float cosPitch = Math.cos(Math.toRadians(-pitch));
 		return new Vector3f(

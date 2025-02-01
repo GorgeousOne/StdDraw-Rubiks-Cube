@@ -3,6 +3,7 @@ package rubik;
 import lib.StdDraw;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.awt.event.KeyEvent;
 
@@ -26,13 +27,13 @@ public class Main {
 	Main() {
 		mouseSensitivity = 200;
 		setGameSize(800, 600);
-		cam = new Camera(new Vector3f(), 2, 30, 25, 60);
+		cam = new Camera(new Vector3f(), 2, 30, 25, 30);
 		renderQueue = new RenderQueue();
 
 		box = new RubiksCube(0.5f);
 		sphere = new SpotSphere(10f, 100, 0.01f);
 
-		TwistAnim twist = new TwistAnim(2000, box.getPerm());
+		TwistAnim twist = new TwistAnim(5000, box.getPerm());
 		twist.twistZ(0);
 		twist.start();
 		box.animate(twist);
@@ -57,8 +58,8 @@ public class Main {
 				requestExit = true;
 			}
 
-			if (System.currentTimeMillis() - start > 3000 && anim2 == null) {
-				anim2 = new TwistAnim(2000, box.getPerm());
+			if (System.currentTimeMillis() - start > 7000 && anim2 == null) {
+				anim2 = new TwistAnim(5000, box.getPerm());
 				anim2.twistY(0);
 				anim2.start();
 				box.animate(anim2);
@@ -77,12 +78,9 @@ public class Main {
 	private void render() {
 		StdDraw.setPenRadius(0.006);
 		
-		Matrix4f projection = cam.getProjection(aspect);
-		Matrix4f viewProjection = projection.mul(cam.getView());
-		
 //		sphere.render(viewProjection, aspect);
-		box.render(viewProjection, cam.getPos(), renderQueue);
-		renderQueue.render(cam.getPos());
+		box.render(cam.getPos(), renderQueue);
+		renderQueue.render(new Vector4f(cam.getPos(), 1), cam.getViewProjection(aspect));
 	}
 
 	private void handleMouseInput() {

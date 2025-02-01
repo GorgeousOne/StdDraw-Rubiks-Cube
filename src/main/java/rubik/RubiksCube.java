@@ -7,6 +7,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class that represents a Rubik's Cube consisting of 26 smaller cubes in a permutable 3x3x3 grid.
+ */
 public class RubiksCube {
 
 	public enum Facing {
@@ -43,6 +46,10 @@ public class RubiksCube {
 		computeCubes(size / 3);
 	}
 
+	/**
+	 * Initializes the 26 smaller cubes of the Rubik's Cube.
+	 * @param cubeSize
+	 */
 	private void computeCubes(float cubeSize) {
 		cubes = new ArrayList<>();
 
@@ -62,6 +69,9 @@ public class RubiksCube {
 		}
 	}
 
+	/**
+	 * Assigns the initial face colors of a small cube based on its position in the 3x3x3 grid.
+	 */
 	private void updateColors(Cube cube, int dx, int dy, int dz) {
 		if (dz == -1) {
 			cube.setFaceColor(0, GREEN);
@@ -87,7 +97,7 @@ public class RubiksCube {
 		this.twistAnim = anim;
 	}
 
-	public void render(Matrix4f viewProjection, Vector3f camPos, RenderQueue renderQueue) {
+	public void render(Vector3f camPos, RenderQueue renderQueue) {
 
 		long time = System.currentTimeMillis();
 
@@ -101,7 +111,7 @@ public class RubiksCube {
 			}
 		}
 		for (Cube cube : cubes) {
-			cube.render(viewProjection, camPos, renderQueue);
+			cube.render(camPos, renderQueue);
 		}
 	}
 
