@@ -59,7 +59,7 @@ public class RubiksCube {
 					if (dx == 0 && dy == 0 && dz == 0) {
 						continue;
 					}
-					Cube cube = new Cube(cubeSize);
+					Cube cube = new Cube(cubeSize * 0.98f);
 					cube.translate(dx * cubeSize, dy * cubeSize, dz * cubeSize);
 					updateColors(cube, dx, dy, dz);
 					cubesPermutation[dx + 1][dy + 1][dz + 1] = cubes.size();

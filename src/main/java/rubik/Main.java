@@ -34,7 +34,7 @@ public class Main {
 		sphere = new SpotSphere(10f, 100, 0.01f);
 
 		TwistAnim twist = new TwistAnim(5000, box.getPerm());
-		twist.twistZ(0);
+		twist.twistZ(-1);
 		twist.start();
 		box.animate(twist);
 
