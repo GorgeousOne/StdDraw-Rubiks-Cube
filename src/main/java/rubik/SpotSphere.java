@@ -1,13 +1,37 @@
 package rubik;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import lib.StdDraw;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 public class SpotSphere {
 	
+	class Spot {
+		private Vector4f pos;
+		private float size;
+
+		public Spot(Vector4f pos, float size) {
+			this.pos = pos;
+			this.size = size;
+		}
+
+		public void render(Matrix4f viewProjection) {
+			Vector4f p = viewProjection.transform(pos, new Vector4f());
+
+			if (p.z < 0) {
+				return;
+			}
+			p.div(p.w);
+			StdDraw.circle(p.x, p.y, size);
+		}
+	}
+
 	private List<Spot> spots;
 	
 	public SpotSphere(float radius, int count, float spotSize) {
@@ -23,9 +47,12 @@ public class SpotSphere {
 		}
 	}
 	
-	public void render(Matrix4f viewProjection, float aspect) {
+	public void render(Matrix4f viewProjection, Vector3f camViewDir) {
 		for (Spot spot : spots) {
-			spot.render(viewProjection, aspect);
+			float cosViewAngle = new Vector3f(spot.pos.x, spot.pos.y, spot.pos.z).dot(camViewDir);
+			if (cosViewAngle > 0) {
+				spot.render(viewProjection);
+			}
 		}
 	}
 }

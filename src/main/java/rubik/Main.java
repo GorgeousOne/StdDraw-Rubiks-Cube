@@ -6,6 +6,8 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -27,11 +29,11 @@ public class Main {
 	Main() {
 		mouseSensitivity = 200;
 		setGameSize(800, 600);
-		cam = new Camera(new Vector3f(), 2, 30, 25, 30);
+		cam = new Camera(new Vector3f(), 3, 30, 25, 30);
 		renderQueue = new RenderQueue();
 
 		box = new RubiksCube(0.5f);
-		sphere = new SpotSphere(10f, 100, 0.01f);
+		sphere = new SpotSphere(2f, 100, 0.02f);
 
 		TwistAnim twist = new TwistAnim(5000, box.getPerm());
 		twist.twistZ(-1);
@@ -44,7 +46,8 @@ public class Main {
 	private void setGameSize(int w, int h) {
 		StdDraw.setCanvasSize(w, h);
 		this.aspect = 1f * w / h;
-		//StdDraw.setXscale(-w / 2f, w / 2f);
+		StdDraw.setXscale(-1, 1);
+		StdDraw.setYscale(-1 / aspect, 1 / aspect);
 	}
 
 	private void runGameLoop() {
@@ -54,6 +57,8 @@ public class Main {
 		pMouseY = (float) StdDraw.mouseY();
 
 		while (!requestExit) {
+			StdDraw.clear();
+
 			if (StdDraw.isKeyPressed(KeyEvent.VK_ESCAPE)) {
 				requestExit = true;
 			}
@@ -64,13 +69,11 @@ public class Main {
 				anim2.start();
 				box.animate(anim2);
 			}
-
 			handleMouseInput();
 			render();
 
 			StdDraw.show();
 			//StdDraw.pause(15);
-			StdDraw.clear();
 		}
 		System.exit(0);
 	}
@@ -78,9 +81,10 @@ public class Main {
 	private void render() {
 		StdDraw.setPenRadius(0.006);
 		
-//		sphere.render(viewProjection, aspect);
+		Matrix4f viewProjection = cam.getViewProjection();
+		sphere.render(viewProjection, cam.getViewDir());
 		box.render(cam.getPos(), renderQueue);
-		renderQueue.render(new Vector4f(cam.getPos(), 1), cam.getViewProjection(aspect));
+		renderQueue.render(new Vector4f(cam.getPos(), 1), viewProjection);
 	}
 
 	private void handleMouseInput() {

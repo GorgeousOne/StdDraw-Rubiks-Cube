@@ -63,7 +63,7 @@ public class RenderQueue {
 			double[] xs = new double[screenVerts.length];
 			for (int i = 0; i < screenVerts.length; i++) {
 				//convert from JOML [-1, 1] to StdDraw [0, 1] screen space
-				xs[i] = screenVerts[i].x * 0.5 + 0.5;
+				xs[i] = screenVerts[i].x;
 			}
 			return xs;
 		}
@@ -71,7 +71,7 @@ public class RenderQueue {
 		public double[] getYs() {
 			double[] ys = new double[screenVerts.length];
 			for (int i = 0; i < screenVerts.length; i++) {
-				ys[i] = screenVerts[i].y * 0.5 + 0.5;
+				ys[i] = screenVerts[i].y;
 			}
 			return ys;
 		}

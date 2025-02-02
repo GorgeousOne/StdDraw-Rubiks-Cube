@@ -39,9 +39,9 @@ public class Camera {
 	/**
 	 * Returns the projection transform matrix to transform points from camera space to clip space.
 	 */
-	public Matrix4f getViewProjection(float aspectRatio) {
+	public Matrix4f getViewProjection() {
 		Matrix4f viewTransform = new Matrix4f().lookAt(getPos(), target, UP);
-		Matrix4f projectTransform = new Matrix4f().perspective(Math.toRadians(fov), aspectRatio, 0.1f, 100f);
+		Matrix4f projectTransform = new Matrix4f().perspective(Math.toRadians(fov), 1f, 0.1f, 100f);
 		return projectTransform.mul(viewTransform);
 	}
 
